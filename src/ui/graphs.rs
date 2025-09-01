@@ -29,10 +29,9 @@ fn create_bar_element(x: u16, y: u16, what: &str, num: usize) -> Element<AppStat
             "" // trailing padding if needed
         );
 
-        el.x.set(state.app_x + x);
-        el.y.set(state.app_y + y);
         el.look.update(vec![vec![look_str]]);
-        crate::ui::draw_if_fits(el);
+
+        crate::ui::draw_relative(el, x, y, state);
     }));
 
     el

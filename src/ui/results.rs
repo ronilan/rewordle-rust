@@ -1,6 +1,9 @@
 use crate::tui_engine::*;
 use crate::AppState;
 
+static X: u16 = 40;
+static Y: u16 = 4;
+
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut results: Element<AppState> = Element::new(0, 0, Look::new());
 
@@ -21,11 +24,9 @@ pub fn build<'a>() -> Element<'a, AppState> {
             vec![format!("Max Streak: {}", state.streak.1)],
         ];
 
-        el.x.set(state.app_x + 40);
-        el.y.set(state.app_y + 4);
         el.look.update(look);
-
-        crate::ui::draw_if_fits(el);
+        
+        crate::ui::draw_relative(el, X, Y, state);
     }));
 
     results

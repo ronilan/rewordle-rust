@@ -2,6 +2,9 @@ use crate::game::*;
 use crate::tui_engine::*;
 use crate::AppState;
 
+static X: u16 = 40;
+static Y: u16 = 19;
+
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut enter_key = Element::new(
         0,
@@ -13,10 +16,7 @@ pub fn build<'a>() -> Element<'a, AppState> {
         ]),
     );
     enter_key.on_state = Some(Box::new(|el, state: &AppState| {
-        el.x.set(state.app_x + 40);
-        el.y.set(state.app_y + 19);
-
-        crate::ui::draw_if_fits(el);
+        crate::ui::draw_relative(el, X, Y, state);
     }));
     enter_key.on_click = Some(Box::new(|el, state, event| {
         if mouse_over(el, event) {

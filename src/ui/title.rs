@@ -13,7 +13,8 @@ pub fn build<'a>() -> Element<'a, AppState> {
 
         el.look
             .update(vec![vec![terminal_style::format::inverse(&line)]]);
-        crate::ui::draw_if_fits(el);
+        
+        draw(el);
     }));
 
     title_bar

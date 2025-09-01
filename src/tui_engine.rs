@@ -458,7 +458,7 @@ where
     S: Clone + PartialEq + 'static,
 {
     clear_screen();
-    // intitial draw as defined by user
+    // initial draw as defined by user
     draw_all(&elements);
 
     let mut listeners = build_listeners(&elements);

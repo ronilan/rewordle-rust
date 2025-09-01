@@ -1,5 +1,3 @@
-use crate::tui_engine::Elements;
-
 mod event_loop;
 mod tui_engine;
 
@@ -8,8 +6,10 @@ mod storage;
 mod ui;
 mod words;
 
+use crate::tui_engine::Elements;
 use crate::storage::read;
 use crate::words::PLAY_WORDS;
+
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum GameStatus {
@@ -77,7 +77,7 @@ fn main() {
         streak,
         exit_flag: false,
     };
-    let elements: Elements<'_, AppState> = ui::build();
+    let elements: Elements<'_, AppState> = crate::ui::elements::build();
 
     tui_engine::run(state, elements, None, Some(&exit_ui));
 }

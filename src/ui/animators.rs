@@ -43,7 +43,7 @@ pub fn reveal_animator(el: &Element<AppState>, in_play: usize, status: &[Vec<cha
             // rebuild Look
             full_look = Look::from(rows);
             el.look.update(full_look.clone());
-            crate::ui::draw_if_fits(el);
+            draw(el);
             std::thread::sleep(std::time::Duration::from_millis(300));
         }
 
@@ -75,7 +75,7 @@ pub fn reveal_animator(el: &Element<AppState>, in_play: usize, status: &[Vec<cha
             full_look = Look::from(rows);
 
             el.look.update(full_look.clone());
-            crate::ui::draw_if_fits(el);
+            draw(el);
             std::thread::sleep(std::time::Duration::from_millis(300));
         }
     }
@@ -127,7 +127,7 @@ pub fn invalid_word_animator(el: &Element<AppState>, in_play: usize) {
         temp_rows[row_index + 2] = shake_row(&original_bottom, dx);
 
         el.look.update(Look::from(temp_rows));
-        crate::ui::draw_if_fits(el);
+        draw(el);
         std::thread::sleep(std::time::Duration::from_millis(50));
     }
 }

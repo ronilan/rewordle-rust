@@ -42,10 +42,7 @@ pub fn create_key<'a>(x: u16, y: u16, letter: char) -> Element<'a, AppState> {
             ]));
         }
 
-        el.x.set(state.app_x + x);
-        el.y.set(state.app_y + y);
-
-        crate::ui::draw_if_fits(el);
+        crate::ui::draw_relative(el,x, y, state);
     }));
 
     // --- on_click: inject letter into state ---

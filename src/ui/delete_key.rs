@@ -2,6 +2,9 @@ use crate::game::*;
 use crate::tui_engine::*;
 use crate::AppState;
 
+static X: u16 = 66;
+static Y: u16 = 19;
+
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut delete_key: Element<AppState> = Element::new(
         0,
@@ -14,10 +17,7 @@ pub fn build<'a>() -> Element<'a, AppState> {
     );
 
     delete_key.on_state = Some(Box::new(|el, state| {
-        el.x.set(state.app_x + 66);
-        el.y.set(state.app_y + 19);
-
-        crate::ui::draw_if_fits(el);
+        crate::ui::draw_relative(el, X, Y, state);
     }));
     delete_key.on_click = Some(Box::new(|el, state, event| {
         if mouse_over(el, event) {

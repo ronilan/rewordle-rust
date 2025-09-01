@@ -2,6 +2,9 @@ use crate::game::*;
 use crate::tui_engine::*;
 use crate::AppState;
 
+static X: u16 = 9;
+static Y: u16 = 4;
+
 // ---------------- Board ---------------- //
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut board: Element<AppState> = Element::new(0, 0, Look::new());
@@ -129,10 +132,8 @@ pub fn build<'a>() -> Element<'a, AppState> {
             .collect::<Vec<Vec<String>>>();
 
         el.look.update(mapped);
-        el.x.set(state.app_x + 9);
-        el.y.set(state.app_y + 4);
 
-        crate::ui::draw_if_fits(el);
+        crate::ui::draw_relative(el, X, Y, state);
     }));
 
     board

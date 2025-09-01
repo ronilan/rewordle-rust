@@ -3,6 +3,9 @@ use crate::storage::save;
 use crate::tui_engine::*;
 use crate::{AppState, GameStatus};
 
+static X: u16 = 75;
+static Y: u16 = 22;
+
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut button_next: Element<AppState> = Element::new(0, 0, Look::new());
 
@@ -23,9 +26,7 @@ pub fn build<'a>() -> Element<'a, AppState> {
             el.look.update(Look::from("    "));
         }
 
-        el.x.set(state.app_x + 75);
-        el.y.set(state.app_y + 22);
-        crate::ui::draw_if_fits(el);
+        crate::ui::draw_relative(el, X, Y, state);
     }));
     button_next
 }

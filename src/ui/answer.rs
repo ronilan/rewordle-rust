@@ -1,6 +1,9 @@
 use crate::tui_engine::*;
 use crate::{AppState, GameStatus};
 
+static X: u16 = 30;
+static Y: u16 = 2;
+
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut answer: Element<AppState> = Element::new(0, 0, Look::new());
 
@@ -67,9 +70,7 @@ pub fn build<'a>() -> Element<'a, AppState> {
             }
         }
 
-        el.x.set(state.app_x + 30);
-        el.y.set(state.app_y + 2);
-        crate::ui::draw_if_fits(el);
+        crate::ui::draw_relative(el, X, Y, state);
     }));
 
     answer
