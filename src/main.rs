@@ -68,7 +68,7 @@ fn main() {
         app_y: 0,
         game: GameStatus::InPlay,
         word_index,
-        answer: PLAY_WORDS[0],
+        answer: PLAY_WORDS[word_index],
         status: vec![vec![' '; 5]; 6],
         in_play: 0,
         used: Vec::new(),

@@ -779,16 +779,7 @@ pub fn build_elements<'a>() -> Elements<'a, AppState> {
     elements.push(results);
 
     fn create_bar_element(x: u16, y: u16, what: &str, num: usize) -> Element<AppState> {
-        let mut el: Element<AppState> = Element::new(
-            dynamic_x(x + 57),
-            dynamic_y(y + 4),
-            Look::from(vec![vec![format!(
-                "{} {}{}",
-                what,
-                inverse(""),
-                inverse(&num.to_string())
-            )]]),
-        );
+        let mut el: Element<AppState> = Element::new(0, 0, Look::from(""));
 
         el.on_state = Some(Box::new(move |el, state| {
             let index = num - 1; // now `num` is owned by the closure
