@@ -3,6 +3,7 @@ use crate::tui_engine::Elements;
 mod event_loop;
 mod tui_engine;
 
+mod game;
 mod storage;
 mod ui;
 mod words;
@@ -76,7 +77,7 @@ fn main() {
         streak,
         exit_flag: false,
     };
-    let elements: Elements<'_, AppState> = ui::build_elements();
+    let elements: Elements<'_, AppState> = ui::build();
 
     tui_engine::run(state, elements, None, Some(&exit_ui));
 }

@@ -1,0 +1,32 @@
+use crate::tui_engine::*;
+use crate::AppState;
+
+pub fn build<'a>() -> Element<'a, AppState> {
+    let mut results: Element<AppState> = Element::new(0, 0, Look::new());
+
+    results.on_state = Some(Box::new(|el, state| {
+        let r = &state.results;
+        let p: u32 = r.iter().sum();
+
+        let win_percent = if p > 0 {
+            (((p - r[6]) as f32 / p as f32) * 100.0).round() as u32
+        } else {
+            0
+        };
+
+        let look = vec![
+            vec![format!("Played: {}", p)],
+            vec![format!("Win %: {}", win_percent)],
+            vec![format!("Streak: {}  ", state.streak.0)],
+            vec![format!("Max Streak: {}", state.streak.1)],
+        ];
+
+        el.x.set(state.app_x + 40);
+        el.y.set(state.app_y + 4);
+        el.look.update(look);
+
+        crate::ui::draw_if_fits(el);
+    }));
+
+    results
+}
