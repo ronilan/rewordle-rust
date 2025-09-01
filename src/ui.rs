@@ -799,7 +799,7 @@ pub fn build_elements<'a>() -> Elements<'a, AppState> {
 
             let look_str = format!(
                 "{} {}{}{}{}",
-                index + 1,
+                what,
                 inverse(&bar),
                 inverse(&value.to_string()),
                 end,
