@@ -7,8 +7,8 @@ static Y: u16 = 19;
 
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut delete_key: Element<AppState> = Element::new(
-        0,
-        0,
+        X,
+        Y,
         Look::from(vec![
             vec!["┌", "─", "─", "┐"],
             vec!["│", " ", "⌫", "│"],
@@ -16,13 +16,13 @@ pub fn build<'a>() -> Element<'a, AppState> {
         ]),
     );
 
-    delete_key.on_state = Some(Box::new(|el, state| {
-        crate::ui::draw_relative(el, X, Y, state);
-    }));
     delete_key.on_click = Some(Box::new(|el, state, event| {
         if mouse_over(el, event) {
-            mutate_state_on_input(el, state, &"delete".to_string());
+            mutate_state_letter(state, &"delete".to_string());
         }
+    }));
+    delete_key.on_state = Some(Box::new(|el, state| {
+        crate::ui::draw_relative(el, X, Y, state);
     }));
 
     delete_key

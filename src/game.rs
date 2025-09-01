@@ -1,7 +1,5 @@
-use crate::tui_engine::*;
-use crate::ui::animators::{invalid_word_animator, reveal_animator};
 use crate::words::{PLAY_WORDS, VALID_WORDS};
-use crate::{AppState, GameStatus};
+use crate::{AppState, GameStatus, WordStatus};
 
 // Determines letter status based on Wordle rules
 fn wordle_highlight(guess_arr: &[char], answer_arr: &[char]) -> Vec<u8> {
@@ -53,34 +51,11 @@ pub(crate) fn get_letter_status(pos: usize, guess_arr: &[char], answer_arr: &[ch
         .unwrap_or(0)
 }
 
-// Maps letter status to background color
-pub(crate) fn set_background_look(letter_status: u8, item: &Look) -> Look {
-    match letter_status {
-        2 => terminal_style::format::background(2, item).unwrap(),
-        1 => terminal_style::format::background(3, item).unwrap(),
-        _ => terminal_style::format::background(8, item).unwrap(),
-    }
-}
-
-// Maps letter status to background color
-pub(crate) fn set_background(letter_status: u8, item: &str) -> String {
-    match letter_status {
-        2 => terminal_style::format::background(2, item).unwrap(),
-        1 => terminal_style::format::background(3, item).unwrap(),
-        _ => terminal_style::format::background(8, item).unwrap(),
-    }
-}
-
 fn is_valid_key(key: &str) -> bool {
     key.len() == 1 && key.chars().all(|c| c.is_ascii_alphabetic())
 }
 
-// encapsulate anything that can happen in the game
-pub(crate) fn mutate_state_on_input(
-    el: &Element<'_, AppState>,
-    state: &mut AppState,
-    keypress: &str,
-) {
+pub(crate) fn mutate_state_letter(state: &mut AppState, keypress: &str) {
     match state.game {
         GameStatus::InPlay => {
             let line_in_play = &mut state.status[state.in_play];
@@ -95,43 +70,11 @@ pub(crate) fn mutate_state_on_input(
                 // Enter pressed and line is full
                 let word: String = line_in_play.iter().collect();
                 if !VALID_WORDS.contains(&word.as_str()) && !PLAY_WORDS.contains(&word.as_str()) {
-                    invalid_word_animator(el, state.in_play);
+                    state.word_status = WordStatus::Invalid;
                     return;
                 } else {
-                    let status_snapshot = state.status.clone(); // avoid borrowing state here
-
-                    let line_in_play = &mut state.status[state.in_play]; // now mutable borrow is fine
-
-                    // TODO hacking around the fact that the Enter key can not animate the board.
-                    if el.look.cells().len() > 10 {
-                        reveal_animator(el, state.in_play, &status_snapshot, &state.answer);
-                    }
-
-                    if &word == state.answer {
-                        // Win condition
-                        state.word_index += 1;
-                        state.results[state.in_play] += 1;
-                        state.streak.0 += 1;
-                        if state.streak.0 > state.streak.1 {
-                            state.streak.1 = state.streak.0;
-                        }
-                        state.game = GameStatus::Won;
-                    } else if state.in_play == 5 {
-                        // Last attempt, lost
-                        state.word_index += 1;
-                        state.results[6] += 1;
-                        state.streak.0 = 0;
-                        state.game = GameStatus::Lost;
-                    }
-
-                    // Update used letters
-                    for &ch in line_in_play.iter() {
-                        if !state.used.contains(&ch) {
-                            state.used.push(ch);
-                        }
-                    }
-
-                    state.in_play += 1;
+                    state.word_status = WordStatus::Valid;
+                    return;
                 }
             } else if keypress == "delete" && line_in_play[0] != ' ' {
                 // Delete last letter
@@ -150,6 +93,37 @@ pub(crate) fn mutate_state_on_input(
             }
         }
     }
+}
+
+pub(crate) fn mutate_state_new_word(state: &mut AppState) {
+    let line_in_play = &mut state.status[state.in_play]; // now mutable borrow is fine
+    let word: String = line_in_play.iter().collect();
+
+    if &word == state.answer {
+        // Win condition
+        state.word_index += 1;
+        state.results[state.in_play] += 1;
+        state.streak.0 += 1;
+        if state.streak.0 > state.streak.1 {
+            state.streak.1 = state.streak.0;
+        }
+        state.game = GameStatus::Won;
+    } else if state.in_play == 5 {
+        // Last attempt, lost
+        state.word_index += 1;
+        state.results[6] += 1;
+        state.streak.0 = 0;
+        state.game = GameStatus::Lost;
+    }
+
+    // Update used letters
+    for &ch in line_in_play.iter() {
+        if !state.used.contains(&ch) {
+            state.used.push(ch);
+        }
+    }
+
+    state.in_play += 1;
 }
 
 pub(crate) fn mutate_state_new_game(state: &mut AppState) {

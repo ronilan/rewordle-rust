@@ -6,10 +6,16 @@ mod storage;
 mod ui;
 mod words;
 
-use crate::tui_engine::Elements;
 use crate::storage::read;
+use crate::tui_engine::Elements;
 use crate::words::PLAY_WORDS;
 
+#[derive(Clone, Debug, PartialEq)]
+enum WordStatus {
+    InPlay,
+    Valid,
+    Invalid,
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum GameStatus {
@@ -31,6 +37,7 @@ pub struct AppState {
     results: Vec<u32>,      // results[0..6], wins per attempt, results[6] for losses
     streak: (u32, u32),     // (current_streak, max_streak)
     exit_flag: bool,
+    word_status: WordStatus,
 }
 
 fn exit_ui(state: &AppState) -> bool {
@@ -76,6 +83,7 @@ fn main() {
         results,
         streak,
         exit_flag: false,
+        word_status: WordStatus::InPlay,
     };
     let elements: Elements<'_, AppState> = crate::ui::elements::build();
 

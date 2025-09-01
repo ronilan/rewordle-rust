@@ -1,16 +1,39 @@
 use crate::game::*;
 use crate::tui_engine::*;
-use crate::AppState;
+use crate::ui::animators::*;
+use crate::{AppState, WordStatus};
 
 static X: u16 = 9;
 static Y: u16 = 4;
 
-// ---------------- Board ---------------- //
+// Maps letter status to background color
+fn status_to_ansi(status: u8) -> u8 {
+    match status {
+        2 => 2,
+        1 => 3,
+        _ => 8,
+    }
+}
+
 pub fn build<'a>() -> Element<'a, AppState> {
     let mut board: Element<AppState> = Element::new(0, 0, Look::new());
 
-    board.on_keypress = Some(Box::new(|el, state, event| {
-        mutate_state_on_input(el, state, &event.key.clone().unwrap_or_default());
+    // the board initiates animations based on state.
+    // this has to be done in the loop because the state can not be mutated by the on_state callback
+    board.on_loop = Some(Box::new(|el, state, _event| {
+        if state.word_status == WordStatus::Invalid {
+            invalid_word_animator(el, state.in_play);
+            state.word_status = WordStatus::InPlay; // reset status
+        }
+        if state.word_status == WordStatus::Valid {
+            reveal_animator(el, state.in_play, &state.status.clone(), &state.answer);
+
+            state.word_status = WordStatus::InPlay; // reset status
+            mutate_state_new_word(state);
+        }
+    }));
+    board.on_keypress = Some(Box::new(|_el, state, event| {
+        mutate_state_letter(state, &event.key.clone().unwrap_or_default());
     }));
     board.on_state = Some(Box::new(|el, state| {
         let empty_board = Look::from(vec![
@@ -113,7 +136,11 @@ pub fn build<'a>() -> Element<'a, AppState> {
                             } else {
                                 // previous guess: apply background
                                 let letter_status = get_letter_status(c, guess_arr, &answer_arr);
-                                set_background(letter_status, &letter.to_string())
+                                terminal_style::format::background(
+                                    status_to_ansi(letter_status),
+                                    &letter.to_string(),
+                                )
+                                .unwrap()
                             }
                         } else {
                             // border / filler
@@ -123,7 +150,11 @@ pub fn build<'a>() -> Element<'a, AppState> {
                                 item.clone()
                             } else {
                                 let letter_status = get_letter_status(c, guess_arr, &answer_arr);
-                                set_background(letter_status, item)
+                                terminal_style::format::background(
+                                    status_to_ansi(letter_status),
+                                    item,
+                                )
+                                .unwrap()
                             }
                         }
                     })

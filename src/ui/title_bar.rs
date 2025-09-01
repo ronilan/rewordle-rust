@@ -13,7 +13,7 @@ pub fn build<'a>() -> Element<'a, AppState> {
 
         el.look
             .update(vec![vec![terminal_style::format::inverse(&line)]]);
-        
+
         draw(el);
     }));
 

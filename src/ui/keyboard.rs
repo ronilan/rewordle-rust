@@ -3,6 +3,15 @@ use crate::tui_engine::*;
 
 use crate::AppState;
 
+// Maps letter status to background color
+fn status_to_ansi(status: u8) -> u8 {
+    match status {
+        2 => 2,
+        1 => 3,
+        _ => 8,
+    }
+}
+
 /// Creates a single key element (A–Z)
 pub fn create_key<'a>(x: u16, y: u16, letter: char) -> Element<'a, AppState> {
     let look = Look::from(vec![
@@ -13,7 +22,11 @@ pub fn create_key<'a>(x: u16, y: u16, letter: char) -> Element<'a, AppState> {
 
     let mut el = Element::new(x, y, look);
 
-    // --- on_state: redraw + background status ---
+    el.on_click = Some(Box::new(move |el, state, event| {
+        if mouse_over(el, event) {
+            mutate_state_letter(state, &letter.to_string());
+        }
+    }));
     el.on_state = Some(Box::new(move |el, state: &AppState| {
         if state.used.contains(&letter) {
             let mut final_status = 0;
@@ -30,8 +43,9 @@ pub fn create_key<'a>(x: u16, y: u16, letter: char) -> Element<'a, AppState> {
                 }
             }
 
-            // replace look with styled one
-            let styled = set_background_look(final_status, &el.look);
+            let styled =
+                terminal_style::format::background(status_to_ansi(final_status), &el.look).unwrap();
+
             el.look.update(styled);
         } else {
             // letter not used
@@ -42,14 +56,7 @@ pub fn create_key<'a>(x: u16, y: u16, letter: char) -> Element<'a, AppState> {
             ]));
         }
 
-        crate::ui::draw_relative(el,x, y, state);
-    }));
-
-    // --- on_click: inject letter into state ---
-    el.on_click = Some(Box::new(move |el, state, event| {
-        if mouse_over(el, event) {
-            mutate_state_on_input(el, state, &letter.to_string());
-        }
+        crate::ui::draw_relative(el, x, y, state);
     }));
 
     el

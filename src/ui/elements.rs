@@ -6,7 +6,7 @@ pub fn build<'a>() -> Elements<'a, AppState> {
 
     elements.push(crate::ui::screen::build());
     elements.push(crate::ui::centered_modal::build());
-    elements.push(crate::ui::title::build());
+    elements.push(crate::ui::title_bar::build());
     elements.push(crate::ui::button_exit::build());
     elements.push(crate::ui::button_next::build());
     elements.push(crate::ui::board::build());

@@ -1,12 +1,24 @@
-use crate::game::{get_letter_status, set_background};
+use crate::game::get_letter_status;
 use crate::tui_engine::*;
 use crate::AppState;
+
+// Maps letter status to background color
+fn status_to_ansi(status: u8) -> u8 {
+    match status {
+        2 => 2,
+        1 => 3,
+        _ => 8,
+    }
+}
 
 pub fn reveal_animator(el: &Element<AppState>, in_play: usize, status: &[Vec<char>], answer: &str) {
     // helper: color each char
     fn str_to_colored_vec(s: &str, letter_status: u8) -> Vec<String> {
         s.chars()
-            .map(|c| set_background(letter_status, &c.to_string()))
+            .map(|c| {
+                terminal_style::format::background(status_to_ansi(letter_status), &c.to_string())
+                    .unwrap()
+            })
             .collect()
     }
 
