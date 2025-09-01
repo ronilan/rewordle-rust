@@ -85,7 +85,7 @@ fn main() {
         exit_flag: false,
         word_status: WordStatus::InPlay,
     };
-    let elements: Elements<'_, AppState> = crate::ui::elements::build();
+    let elements: Elements<'_, AppState> = crate::ui::rustywordle::build();
 
     tui_engine::run(state, elements, None, Some(&exit_ui));
 }

@@ -16,7 +16,7 @@ pub(crate) mod title_bar;
 pub(crate) mod animators;
 
 // --- Elements
-pub(crate) mod elements;
+pub(crate) mod rustywordle;
 
 // --- Utility
 use crate::{
