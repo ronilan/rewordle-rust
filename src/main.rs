@@ -1,6 +1,7 @@
 mod event_loop;
 mod tui_engine;
 
+mod rustywordle_screen;
 mod game;
 mod storage;
 mod ui;
@@ -85,7 +86,7 @@ fn main() {
         exit_flag: false,
         word_status: WordStatus::InPlay,
     };
-    let elements: Elements<'_, AppState> = crate::ui::rustywordle::build();
+    let elements: Elements<'_, AppState> = crate::rustywordle_screen::build();
 
     tui_engine::run(state, elements, None, Some(&exit_ui));
 }

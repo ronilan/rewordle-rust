@@ -15,9 +15,6 @@ pub(crate) mod title_bar;
 // --- Helpers
 pub(crate) mod animators;
 
-// --- Elements
-pub(crate) mod rustywordle;
-
 // --- Utility
 use crate::{
     tui_engine::{columns, draw, rows, Element},
