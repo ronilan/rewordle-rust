@@ -1,0 +1,12 @@
+{
+  "rust-analyzer.completion.autoimport.exclude": [
+    {
+      "path": "core::borrow::Borrow",
+      "type": "methods"
+    },
+    {
+      "path": "core::borrow::BorrowMut",
+      "type": "methods"
+    }
+  ]
+}
