@@ -4,7 +4,7 @@ mod tui_engine;
 mod rewordle_screen;
 mod game;
 mod storage;
-mod ui;
+mod elements;
 mod words;
 
 use crate::storage::read;
