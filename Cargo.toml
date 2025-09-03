@@ -1,15 +1,15 @@
 [package]
-name = "rustywordle"
+name = "rewordle"
 version = "0.1.0"
 edition = "2021"
 
-description = "Rusty Wordle lets you play all the Wordle words from the beginning in the terminal"
+description = "Rewordle lets you play all the Wordle words from the beginning in the terminal"
 license = "CC-BY-NC-ND-4.0"
 authors = ["Yaron (Ron) Ilan"]
-homepage = "https://github.com/ronilan/rustywordle"
-repository = "https://github.com/ronilan/rustywordle"
+homepage = "https://github.com/ronilan/rewordle-rust"
+repository = "https://github.com/ronilan/rewordle-rust"
 readme = "README.md"
-keywords = ["game", "wordle", "terminal"]
+keywords = ["game", "wordle", "terminal", "rewordle"]
 categories = ["games"]
 exclude = ["examples", "media"]
 
@@ -20,7 +20,7 @@ futures-timer = "3.0.3"
 terminal_style = "0.4.0"
 
 [[bin]]
-name = "rustywordle"
+name = "rewordle"
 path = "src/main.rs"
 
 [profile.release]

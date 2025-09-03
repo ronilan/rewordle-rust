@@ -8,7 +8,7 @@ pub fn build<'a>() -> Element<'a, AppState> {
         let cols = crossterm::terminal::size().unwrap().0 as usize;
 
         let mut line = " ".repeat(cols);
-        let text = "Rusty Wordle";
+        let text = "Rewordle";
         line.replace_range(0..text.len().min(cols), &text);
 
         el.look
