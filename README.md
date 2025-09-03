@@ -10,7 +10,7 @@ It's written in [Rust](https://www.rust-lang.org/).
 
 ## Pre Built Binaries
 
-Pre built binaries are provided for each [release](https://github.com/ronilan/rewordle/releases).
+Pre built binaries are provided for each [release](https://github.com/ronilan/rewordle-rust/releases).
 
 ## From crates.io
 Ruewordle is published as a crate on [crates.io](https://crates.io/crates/rewordle). If you have Cargo, you can install it with
@@ -28,7 +28,7 @@ If you don't want to install a Rust crate, but do have Rust installed, you can b
 
 Clone this repository,
 ```sh
-git clone https://github.com/ronilan/rewordle.git
+git clone https://github.com/ronilan/rewordle-rust.git
 ```
 
 ```sh
