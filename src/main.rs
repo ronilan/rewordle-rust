@@ -1,10 +1,10 @@
 mod event_loop;
 mod tui_engine;
 
-mod rewordle_screen;
-mod game;
-mod storage;
 mod elements;
+mod game;
+mod rewordle_screen;
+mod storage;
 mod words;
 
 use crate::storage::read;

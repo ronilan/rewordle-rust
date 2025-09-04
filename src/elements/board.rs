@@ -1,6 +1,6 @@
+use crate::elements::animators::*;
 use crate::game::*;
 use crate::tui_engine::*;
-use crate::elements::animators::*;
 use crate::{AppState, WordStatus};
 
 static X: u16 = 9;
