@@ -1,9 +1,9 @@
 [package]
 name = "rewordle"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
-description = "Rewordle lets you play all the Wordle words from the beginning in the terminal"
+description = "Rewordle lets you play all the Wordle words from the beginning in the terminal."
 license = "CC-BY-NC-ND-4.0"
 authors = ["Yaron (Ron) Ilan"]
 homepage = "https://github.com/ronilan/rewordle-rust"
