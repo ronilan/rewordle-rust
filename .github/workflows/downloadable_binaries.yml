@@ -71,17 +71,6 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # Build the Rust package tool first, then use it for all subsequent builds.
-      - name: Build tools
-        shell: bash
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: cargo build --release --bin package && cp target/release/package* .
-
-      # Ensure a clean dist/ before building - dist/ has been committed to
-      # this repo before (like docs/ was), so a checkout can restore stale
-      # binaries from git history. Don't rely on the working tree being
-      # spotless; wipe it explicitly before every build.
       - name: Clean previous build output (Unix)
         if: matrix.name != 'windows'
         shell: bash
@@ -92,15 +81,26 @@ jobs:
         shell: pwsh
         run: Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
 
-      # CARGO_NET_GIT_FETCH_WITH_CLI tells Cargo to shell out to the system's
-      # `git` binary instead of using its built-in libgit2 fetcher. This matters
-      # because only the system git picks up the credential rewrite configured
-      # above (`git config --global url...insteadOf`) - libgit2 ignores it and
-      # will fail to fetch the private incredible-alpha dependency without this.
-      - name: Build terminal binary
+      # Build the release binary directly (no package tool in this repo).
+      - name: Build terminal binary (Unix)
+        if: matrix.name != 'windows'
+        shell: bash
         env:
           CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: ./package terminal
+        run: |
+          cargo build --release --bin rewordle
+          mkdir -p dist/cli
+          cp target/release/rewordle dist/cli/
+
+      - name: Build terminal binary (Windows)
+        if: matrix.name == 'windows'
+        shell: bash
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        run: |
+          cargo build --release --bin rewordle
+          mkdir -p dist/cli
+          cp target/release/rewordle.exe dist/cli/
 
       # Zip immediately, in this job, right after building - BEFORE the
       # binary ever goes through upload-artifact. upload-artifact does not
@@ -168,29 +168,45 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # Build the Rust package tool first, then use it for all subsequent builds.
-      - name: Build tools
-        shell: bash
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: cargo build --release --bin package && cp target/release/package* .
-
-      # Same reasoning as build-terminal: don't trust a checked-out
-      # dist/ to be empty.
       - name: Clean previous build output
         shell: bash
         run: rm -rf dist
 
+      # Build the macOS native binary directly (no package tool in this repo).
+      # APP_NAME is read at compile time for the window title.
+      - name: Build macOS native binary
+        shell: bash
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          APP_NAME: Rewordle
+        run: |
+          cargo build --release --features macos-native --bin rewordle_macos
+          mkdir -p dist/native
+          cp target/release/rewordle_macos dist/native/
+
+      # Bundle .app + .dmg (no package tool in this repo; icon step skipped -
+      # the app runs with a generic icon until icon generation is restored).
+      - name: Bundle macOS app + DMG
+        shell: bash
+        run: |
+          APP_BUNDLE="dist/native/Rewordle.app"
+          mkdir -p "${APP_BUNDLE}/Contents/MacOS" "${APP_BUNDLE}/Contents/Resources"
+          cp dist/native/rewordle_macos "${APP_BUNDLE}/Contents/MacOS/rewordle_macos"
+          cp Info.plist "${APP_BUNDLE}/Contents/Info.plist"
+          rm -rf dist/native/dmg && mkdir -p dist/native/dmg
+          cp -R "${APP_BUNDLE}" dist/native/dmg/
+          ln -s /Applications dist/native/dmg/Applications
+          rm -f dist/native/Rewordle.dmg
+          hdiutil create -volname "Rewordle" -srcfolder dist/native/dmg -ov -format UDZO dist/native/Rewordle.dmg
+          rm -rf dist/native/dmg
+
+      # Same reasoning as build-terminal: don't trust a checked-out
+      # dist/ to be empty.
       # CARGO_NET_GIT_FETCH_WITH_CLI tells Cargo to shell out to the system's
       # `git` binary instead of using its built-in libgit2 fetcher. This matters
       # because only the system git picks up the credential rewrite configured
       # above (`git config --global url...insteadOf`) - libgit2 ignores it and
       # will fail to fetch the private incredible-alpha dependency without this.
-      - name: Build & bundle macOS native binary
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: ./package macos --bundle
-
       # Zip the .dmg here, right after bundling - same permission-loss
       # reasoning as build-terminal above. A .dmg itself doesn't carry a
       # meaningful Unix executable bit, but zipping here keeps every job's
@@ -234,29 +250,30 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # Build the Rust package tool first, then use it for all subsequent builds.
-      - name: Build tools
-        shell: bash
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: cargo build --release --bin package && cp target/release/package* .
-
-      # Same reasoning as the other two jobs: don't trust a checked-out
-      # dist/ to be empty.
       - name: Clean previous build output
         shell: pwsh
         run: Remove-Item -Recurse -Force dist -ErrorAction SilentlyContinue
 
+      # Build the Windows native binary directly (no package tool in this repo).
+      # APP_NAME is read at compile time for the window title.
+      # (Icon injection skipped - needs Win32 APIs; the exe runs unbranded.)
+      - name: Build Windows native binary
+        shell: bash
+        env:
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+          APP_NAME: Rewordle
+        run: |
+          cargo build --release --features windows-native --bin rewordle_windows
+          mkdir -p dist/native
+          cp target/release/rewordle_windows.exe dist/native/
+
+      # Same reasoning as the other two jobs: don't trust a checked-out
+      # dist/ to be empty.
       # CARGO_NET_GIT_FETCH_WITH_CLI tells Cargo to shell out to the system's
       # `git` binary instead of using its built-in libgit2 fetcher. This matters
       # because only the system git picks up the credential rewrite configured
       # above (`git config --global url...insteadOf`) - libgit2 ignores it and
       # will fail to fetch the private incredible-alpha dependency without this.
-      - name: Build & bundle Windows native binary
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: ./package windows --bundle
-
       # Windows runners don't ship `zip` in their Git Bash - use
       # PowerShell's built-in Compress-Archive instead. .exe files don't
       # carry a Unix executable bit to lose, but zipping here keeps this
