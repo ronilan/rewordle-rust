@@ -5,8 +5,9 @@
 # clone or checkout required. Downloads the release asset matching your
 # platform and installs the binary into /usr/local/bin.
 #
-# If `gh` (the GitHub CLI) is installed and authenticated, it is used for the
-# API calls and the asset download; otherwise anonymous access is used.
+# If `gh` (the GitHub CLI) is installed and authenticated, it is used as a
+# fallback for private repos; otherwise anonymous access is used, which works
+# for public repos with nothing installed.
 #
 # Usage:
 #   bash install.sh                 # standard install
@@ -43,12 +44,19 @@ esac
 # --- 2. Fetch the latest release metadata ------------------------------------
 # Note: /releases/latest excludes drafts and prereleases (404s if the most
 # recent release is one), so we list /releases and take the most recent.
-if command -v gh >/dev/null 2>&1; then
-  echo "Looking up latest release for ${REPO} (via gh)..."
+#
+# Anonymous curl works for public repos, so it comes first - no account,
+# no gh needed. Authenticated gh is only a fallback (e.g. private repos).
+use_gh=false
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  use_gh=true
+fi
+
+echo "Looking up latest release for ${REPO}..."
+assets=$(curl -fsSL --retry 3 "https://api.github.com/repos/${REPO}/releases?per_page=1") || assets=""
+if [ -z "$assets" ] && [ "$use_gh" = true ]; then
+  echo "(anonymous lookup failed, retrying authenticated...)"
   assets=$(gh api "repos/${REPO}/releases?per_page=1") || assets=""
-else
-  echo "Looking up latest release for ${REPO}..."
-  assets=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases?per_page=1") || assets=""
 fi
 
 asset=$(printf '%s' "$assets" \
@@ -72,16 +80,20 @@ release_tag=$(printf '%s' "$assets" \
   | head -n 1 | cut -d'"' -f4) || true
 
 # --- 3. Download and unzip into a temp dir -----------------------------------
+# Direct download URL first (no auth needed for public repos); authenticated
+# gh download only as fallback.
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
-if command -v gh >/dev/null 2>&1; then
+url=$(printf '%s' "$assets" \
+  | grep -o "\"browser_download_url\": *\"[^\"]*/${asset}\"" \
+  | cut -d'"' -f4) || true
+if [ -n "$url" ] && curl -fSL --retry 3 --progress-bar -o "${tmp}/${asset}" "$url"; then
+  :
+elif [ "$use_gh" = true ]; then
   gh release download "${release_tag}" --repo "${REPO}" --pattern "${asset}" --dir "${tmp}" --clobber
 else
-  url=$(printf '%s' "$assets" \
-    | grep -o "\"browser_download_url\": *\"[^\"]*/${asset}\"" \
-    | cut -d'"' -f4) || true
-  [ -n "$url" ] || { echo "error: download URL for ${asset} not found" >&2; exit 1; }
-  curl -fSL --progress-bar -o "${tmp}/${asset}" "$url"
+  echo "error: download URL for ${asset} not found" >&2
+  exit 1
 fi
 unzip -o "${tmp}/${asset}" -d "$tmp"
 

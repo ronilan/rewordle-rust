@@ -28,11 +28,10 @@ if [ "${1:-}" ]; then
   bin_name="$1"
 else
   echo "Looking up binary name from the latest release of ${REPO}..."
-  if command -v gh >/dev/null 2>&1; then
+  assets=$(curl -fsSL --retry 3 "https://api.github.com/repos/${REPO}/releases?per_page=1") \
+    || assets=""
+  if [ -z "$assets" ] && command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
     assets=$(gh api "repos/${REPO}/releases?per_page=1") || assets=""
-  else
-    assets=$(curl -fsSL "https://api.github.com/repos/${REPO}/releases?per_page=1") \
-      || assets=""
   fi
   bin_name=$(printf '%s' "$assets" \
     | grep -o '"name": *"[^"]*-terminal-[^"]*\.zip"' \
