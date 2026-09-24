@@ -14,10 +14,17 @@ use incredible_clipboard_terminal::TerminalClipboard;
 use incredible_event_loop_terminal::run_event_loop as looper;
 #[cfg(all(
     not(target_arch = "wasm32"),
+    not(target_os = "windows"),
     not(all(target_os = "macos", feature = "macos-native")),
     not(all(target_os = "windows", feature = "windows-native"))
 ))]
 use incredible_input_terminal_nix::TerminalNixInput;
+#[cfg(all(
+    not(target_arch = "wasm32"),
+    target_os = "windows",
+    not(all(target_os = "windows", feature = "windows-native"))
+))]
+use incredible_input_terminal_windows::TerminalWindowsInput;
 #[cfg(all(
     not(target_arch = "wasm32"),
     not(all(target_os = "macos", feature = "macos-native")),
@@ -60,8 +67,12 @@ use crate::{core::model::initial_state, screens::game};
     not(all(target_os = "windows", feature = "windows-native"))
 ))]
 fn setup_runtime() {
+    #[cfg(target_os = "windows")]
+    let input = Box::new(TerminalWindowsInput::new());
+    #[cfg(not(target_os = "windows"))]
+    let input = Box::new(TerminalNixInput::new());
     setup(Providers {
-        input: Box::new(TerminalNixInput::new()),
+        input,
         output: Box::new(TerminalOutput::new()),
         clipboard: Box::new(TerminalClipboard),
     });

@@ -375,6 +375,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "incredible_input_terminal_windows"
+version = "0.1.0"
+source = "git+https://github.com/ronilan/incredible-alpha#464c5dbe8ed4fbbef5f9bb6f1924534b90911085"
+dependencies = [
+ "futures",
+ "incredible",
+ "windows-sys 0.52.0",
+]
+
+[[package]]
 name = "incredible_input_windows"
 version = "0.1.0"
 source = "git+https://github.com/ronilan/incredible-alpha#464c5dbe8ed4fbbef5f9bb6f1924534b90911085"
@@ -771,6 +781,7 @@ dependencies = [
  "incredible_input_browser",
  "incredible_input_macos",
  "incredible_input_terminal_nix",
+ "incredible_input_terminal_windows",
  "incredible_input_windows",
  "incredible_output_html",
  "incredible_output_macos",
