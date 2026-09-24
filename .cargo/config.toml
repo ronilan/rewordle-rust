@@ -1,0 +1,4 @@
+[net]
+# Use the git CLI (and its credential helper, configured via `gh auth login`)
+# to fetch git dependencies — this is to access the private repo.
+git-fetch-with-cli = true

@@ -1,5 +1,6 @@
 # anything, anywhere starting with __
 __*
+~~*
 
 # Local development
 *.env
@@ -18,8 +19,18 @@ Icon
 .Spotlight-V100
 .Trashes
 
-# Rust
+# Rust build artifacts
 /target
 
-# App specific
-.rewordle
+# Local build artifacts
+/dist
+/docs
+/release
+
+# Built tools
+/config
+/package
+/run
+/config.exe
+/package.exe
+/run.exe

@@ -1,32 +1,42 @@
-use regex::Regex;
 use std::fs::{read_to_string, write};
-use std::path::Path;
+use std::path::PathBuf;
+
+const DATA_DIR: &str = "rewordle";
+const DATA_FILE: &str = ".rewordle";
+
+/// Per-user stats file location, following platform conventions
+/// (macOS: ~/Library/Application Support, Linux: $XDG_DATA_HOME,
+/// Windows: %APPDATA%). `None` when no base data directory can be
+/// determined (e.g. HOME is unset).
+fn data_file_path() -> Option<PathBuf> {
+    Some(dirs::data_dir()?.join(DATA_DIR).join(DATA_FILE))
+}
+
+fn is_number(s: &str) -> bool {
+    !s.is_empty() && s.chars().all(|c| c.is_ascii_digit())
+}
 
 fn load_rewordle(default_data: Vec<String>) -> Vec<String> {
-    // three exact formats
-    let re_one = Regex::new(r"^\d+$").unwrap();
-    let re_two = Regex::new(r"^\d+:\d+$").unwrap();
-    let re_seven = Regex::new(r"^\d+(:\d+){6}$").unwrap();
+    // three exact formats: "0", "0:0", "0:0:0:0:0:0:0"
+    let valid = |s: &String| {
+        let parts: Vec<&str> = s.split(':').collect();
+        matches!(parts.len(), 1 | 2 | 7) && parts.iter().all(|p| is_number(p))
+    };
+    let content = data_file_path().and_then(|path| read_to_string(path).ok());
 
-    if Path::new(".rewordle").exists() {
-        match read_to_string(".rewordle") {
-            Ok(status) => {
-                let lines: Vec<String> = status.lines().map(|s| s.trim().to_string()).collect();
+    match content {
+        Some(status) => {
+            let lines: Vec<String> = status.lines().map(|s| s.trim().to_string()).collect();
 
-                let all_valid = lines
-                    .iter()
-                    .all(|s| re_one.is_match(s) || re_two.is_match(s) || re_seven.is_match(s));
+            let all_valid = lines.iter().all(valid);
 
-                if all_valid {
-                    lines
-                } else {
-                    default_data
-                }
+            if all_valid {
+                lines
+            } else {
+                default_data
             }
-            Err(_) => default_data,
         }
-    } else {
-        default_data
+        None => default_data,
     }
 }
 
@@ -42,7 +52,16 @@ pub fn save(results: &[u32], streak: (u32, u32), word_index: usize) -> std::io::
         streak.1,
         word_index
     );
-    write(".rewordle", content)
+    match data_file_path() {
+        Some(path) => {
+            if let Some(parent) = path.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            write(path, content)
+        }
+        // Nowhere to store: keep playing, just don't persist.
+        None => Ok(()),
+    }
 }
 
 pub fn read() -> Vec<String> {

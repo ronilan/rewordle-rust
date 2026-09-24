@@ -1,0 +1,7 @@
+{
+  "ai": true,
+  "headless": {
+    "name": "opencode",
+    "model": "opencode/big-pickle"
+  }
+}

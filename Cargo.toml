@@ -1,6 +1,6 @@
 [package]
 name = "rewordle"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 
 description = "Rewordle lets you play all the Wordle words from the beginning in the terminal."
@@ -13,16 +13,82 @@ keywords = ["game", "wordle", "terminal", "rewordle"]
 categories = ["games"]
 exclude = ["examples", "media"]
 
+[package.metadata.html]
+title = "Rewordle :: Play all the Wordle words from the beginning in the terminal."
+description = "Rewordle lets you play all the Wordle words from the beginning in the terminal."
+keywords = "game, wordle, terminal, rewordle"
+mobile-min-width = 80
+mobile-min-height = 24
+
+[package.metadata.bundle]
+app_name = "Rewordle"
+binary_name = "rewordle_macos"
+icon_source = "web/favicon.svg"
+
+[lib]
+crate-type = ["cdylib"]
+
 [dependencies]
-crossterm = { version = "0.29", features = ["event-stream"] }
-futures = "0.3.31"
-futures-timer = "3.0.3"
-regex = "1.11.2"
-terminal_style = "0.4.0"
+dirs = "6"
+incredible = { git = "https://github.com/ronilan/incredible-alpha" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+incredible_event_loop_terminal = { git = "https://github.com/ronilan/incredible-alpha" }
+incredible_output_terminal = { git = "https://github.com/ronilan/incredible-alpha" }
+incredible_input_terminal_nix = { git = "https://github.com/ronilan/incredible-alpha" }
+incredible_clipboard_terminal = { git = "https://github.com/ronilan/incredible-alpha" }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+incredible_window_macos = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_input_macos = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_output_macos = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_clipboard_macos = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_event_loop_macos = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+incredible_window_windows = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_input_windows = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_output_windows = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_clipboard_windows = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+incredible_event_loop_windows = { git = "https://github.com/ronilan/incredible-alpha", optional = true }
+windows-sys = { version = "0.59", features = ["Win32_Foundation", "Win32_System_LibraryLoader", "Win32_Storage_FileSystem"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+incredible_event_loop_browser = { git = "https://github.com/ronilan/incredible-alpha" }
+incredible_output_html = { git = "https://github.com/ronilan/incredible-alpha" }
+incredible_input_browser = { git = "https://github.com/ronilan/incredible-alpha" }
+incredible_clipboard_browser = { git = "https://github.com/ronilan/incredible-alpha" }
+wasm-bindgen = "0.2"
+console_error_panic_hook = "0.1"
+
+[features]
+default = []
+macos-native = [
+    "incredible_window_macos",
+    "incredible_input_macos",
+    "incredible_output_macos",
+    "incredible_clipboard_macos",
+    "incredible_event_loop_macos",
+]
+windows-native = [
+    "incredible_window_windows",
+    "incredible_input_windows",
+    "incredible_output_windows",
+    "incredible_clipboard_windows",
+    "incredible_event_loop_windows",
+]
 
 [[bin]]
 name = "rewordle"
 path = "src/main.rs"
+
+[[bin]]
+name = "rewordle_macos"
+path = "src/macos.rs"
+
+[[bin]]
+name = "rewordle_windows"
+path = "src/windows.rs"
 
 [profile.release]
 opt-level = 3

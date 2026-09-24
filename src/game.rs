@@ -56,6 +56,11 @@ fn is_valid_key(key: &str) -> bool {
 }
 
 pub(crate) fn mutate_state_letter(state: &mut AppState, keypress: &str) {
+    // Ignore input while a reveal/shake effect is playing; the old loop was
+    // blocked for the duration, and typing mid-effect would corrupt the row.
+    if state.word_status != WordStatus::InPlay {
+        return;
+    }
     match state.game {
         GameStatus::InPlay => {
             let line_in_play = &mut state.status[state.in_play];
