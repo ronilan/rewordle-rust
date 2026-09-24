@@ -83,25 +83,19 @@ jobs:
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
-      # Build the Rust package tool, then use it for the WASM build.
-      - name: Build tools
-        shell: bash
-        env:
-          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: cargo build --release --bin package && cp target/release/package* .
-
-      # Runs the project's package tool to build WASM assets, which
-      # invokes wasm-pack/cargo to compile the Rust code to WASM.
+      # Build the WASM site into docs/ (release) using the repo script,
+      # which runs wasm-pack and assembles + stamps the static site.
+      # (No package tool in this repo: scripts/build_web.sh does its job.)
       #
       # CARGO_NET_GIT_FETCH_WITH_CLI tells Cargo to shell out to the system's
       # `git` binary instead of using its built-in libgit2 fetcher. This matters
       # because only the system git picks up the credential rewrite configured
       # above (`git config --global url...insteadOf`) — libgit2 ignores it and
       # will fail to fetch the private incredible-alpha dependency without this.
-      - name: Build WASM assets
+      - name: Build WASM site
         env:
           CARGO_NET_GIT_FETCH_WITH_CLI: "true"
-        run: ./package wasm
+        run: ./scripts/build_web.sh
 
       # Packages the contents of the 'docs' folder (the build output directory
       # for this project) into an artifact that GitHub Pages can serve.
