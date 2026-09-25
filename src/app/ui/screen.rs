@@ -9,6 +9,10 @@ use crate::{ui::APP_HEIGHT, ui::APP_WIDTH, AppState};
 pub fn build() -> Element<AppState> {
     let screen: Element<AppState> = Element::new();
     screen.on_loop(|_el, state, _event| {
+        if state.exit_flag {
+            Globals::set_exit_flagged(true);
+            return;
+        }
         let cols = Platform::columns();
         let rows = Platform::rows();
         let x = (cols.saturating_sub(APP_WIDTH) / 2) as isize;

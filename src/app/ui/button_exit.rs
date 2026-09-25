@@ -1,9 +1,6 @@
 use incredible::*;
 
-use crate::{
-    ui::{clicked, mouse_over},
-    AppState,
-};
+use crate::AppState;
 
 pub fn build() -> Element<AppState> {
     let button: Element<AppState> = Element::new();
@@ -16,8 +13,8 @@ pub fn build() -> Element<AppState> {
                 state.exit_flag = true;
             }
         })
-        .on_mouse(|el, state, event| {
-            if clicked(event) && mouse_over(el, event.x, event.y) {
+        .on_mouse(|_el, state, event| {
+            if event.mouse == Mouse::Click {
                 state.exit_flag = true;
             }
         })

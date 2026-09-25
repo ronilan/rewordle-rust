@@ -100,11 +100,20 @@ pub fn run_flow() {
     let root = game::build();
 
     // get() blocks until exit: only valid on native, where the loop is synchronous.
+    // The final state is saved here, so quitting (exit_flag) persists progress.
     #[cfg(all(
         not(target_arch = "wasm32"),
         not(all(target_os = "macos", feature = "macos-native"))
     ))]
-    let _ = tui_run(root, state, looper, |_| {}).get();
+    {
+        let final_state = tui_run(root, state, looper, |_| {}).get();
+        crate::storage::save(
+            &final_state.results,
+            final_state.streak,
+            final_state.word_index,
+        )
+        .ok();
+    }
     #[cfg(target_arch = "wasm32")]
     let _ = tui_run(root, state, looper, |_| {});
 }
