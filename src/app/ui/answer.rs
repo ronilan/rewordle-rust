@@ -5,6 +5,10 @@ use crate::{ui::draw_relative, AppState, GameStatus};
 static X: isize = 30;
 static Y: isize = 2;
 
+// Fixed width covering the longest line ("Wordle #N Magnificent") so a
+// shorter line (e.g. "?????" after Next) erases every leftover cell.
+static WIDTH: usize = 24;
+
 fn plain_row(s: &str) -> Vec<Block> {
     s.chars().map(|c| Block::new(c, Decor::default())).collect()
 }
@@ -42,6 +46,10 @@ pub fn build() -> Element<AppState> {
                 plain_row(&format!("Wordle #{} {}", state.word_index + 1, "?????"))
             }
         };
+        let mut row = row;
+        while row.len() < WIDTH {
+            row.push(Block::new(' ', Decor::default()));
+        }
         el.look(Look::from(vec![row]));
         draw_relative(el, X, Y, state);
     });

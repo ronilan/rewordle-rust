@@ -14,13 +14,14 @@ fn status_to_ansi(status: u8) -> u8 {
     }
 }
 
-fn key_look(letter: char, status: u8) -> Look {
-    let decor = if status > 0 {
-        let d = Decor::default();
-        d.background.set(Some(Color::Ansi(status_to_ansi(status))));
-        d
-    } else {
-        Decor::default()
+fn key_look(letter: char, status: Option<u8>) -> Look {
+    let decor = match status {
+        Some(s) => {
+            let d = Decor::default();
+            d.background.set(Some(Color::Ansi(status_to_ansi(s))));
+            d
+        }
+        None => Decor::default(),
     };
     let rows: Vec<Vec<Block>> = vec![
         vec!['┌', '─', '┐'],
@@ -40,15 +41,18 @@ fn key_look(letter: char, status: u8) -> Look {
 /// Creates a single key element (A–Z)
 pub fn create_key(x: isize, y: isize, letter: char) -> Element<AppState> {
     let key: Element<AppState> = Element::new();
-    key.x(x).y(y).look(key_look(letter, 0));
+    key.x(x).y(y).look(key_look(letter, None));
     key.on_mouse(move |el, state, event| {
         if clicked(event) && mouse_over(el, event.x, event.y) {
             mutate_state_letter(state, &letter.to_string());
         }
     });
     key.on_state(move |el, state, _event| {
+        // None = never tried (plain). Some(status) = tried, always painted —
+        // gray (0) included, not just green/yellow.
+        let tried = state.used.contains(&letter);
         let mut final_status = 0;
-        if state.used.contains(&letter) {
+        if tried {
             // Only submitted rows (below in_play): the current row is unsubmitted
             // and must not leak colors onto the keyboard.
             for (r, guess_arr) in state.status.iter().enumerate() {
@@ -66,7 +70,11 @@ pub fn create_key(x: isize, y: isize, letter: char) -> Element<AppState> {
                 }
             }
         }
-        el.look(key_look(letter, final_status));
+        if tried {
+            el.look(key_look(letter, Some(final_status)));
+        } else {
+            el.look(key_look(letter, None));
+        }
         draw_relative(el, x, y, state);
     });
     key
