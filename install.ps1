@@ -56,14 +56,23 @@ if (-not $isAdmin) {
 $Dest = Join-Path $env:ProgramFiles $folderName
 
 # --- 2. Resolve the asset's download URL from the latest release -------------
+# Anonymous lookup first (works for public repos with nothing installed);
+# authenticated gh only as fallback (e.g. private repos).
 $gh = Get-Command gh -ErrorAction SilentlyContinue
+$useGh = $false
 if ($gh) {
-    Write-Host "Looking up latest release for ${repoOwnerAndName} (via gh)..."
-    $release = (gh api "repos/$repoOwnerAndName/releases?per_page=1") | ConvertFrom-Json | Select-Object -First 1
-} else {
-    Write-Host "Looking up latest release for ${repoOwnerAndName}..."
+    gh auth status *> $null
+    if ($LASTEXITCODE -eq 0) { $useGh = $true }
+}
+Write-Host "Looking up latest release for ${repoOwnerAndName}..."
+$release = $null
+try {
     $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repoOwnerAndName/releases?per_page=1" |
         Select-Object -First 1
+} catch { $release = $null }
+if ((-not $release) -and $useGh) {
+    Write-Host "(anonymous lookup failed, retrying authenticated...)"
+    $release = (gh api "repos/$repoOwnerAndName/releases?per_page=1") | ConvertFrom-Json | Select-Object -First 1
 }
 $assetObj = $release.assets | Where-Object { $_.name -match '-terminal-windows\.zip$' } | Select-Object -First 1
 if (-not $assetObj) {
@@ -80,10 +89,15 @@ $url = $assetObj.browser_download_url
 $tmp = Join-Path ([System.IO.Path]::GetTempPath()) ("install_" + [Guid]::NewGuid().ToString("N"))
 New-Item -ItemType Directory -Path $tmp | Out-Null
 try {
-    if ($gh) {
-        gh release download $release.tag_name --repo $repoOwnerAndName --pattern $assetObj.name --dir $tmp --clobber
-    } else {
+    $downloaded = $false
+    try {
         Invoke-WebRequest -Uri $url -OutFile (Join-Path $tmp $assetObj.name)
+        $downloaded = $true
+    } catch { $downloaded = $false }
+    if ((-not $downloaded) -and $useGh) {
+        gh release download $release.tag_name --repo $repoOwnerAndName --pattern $assetObj.name --dir $tmp --clobber
+    } elseif (-not $downloaded) {
+        throw "Download failed for $($assetObj.name)"
     }
     Expand-Archive -Path (Join-Path $tmp $assetObj.name) -DestinationPath $tmp -Force
 

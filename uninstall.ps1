@@ -53,17 +53,21 @@ if ($BinName) {
     $binName = $BinName
 } else {
     Write-Host "Looking up binary name from the latest release of ${DefaultRepo}..."
-    $gh = Get-Command gh -ErrorAction SilentlyContinue
     $assetObj = $null
     try {
-        if ($gh) {
-            $release = (gh api "repos/$DefaultRepo/releases?per_page=1") | ConvertFrom-Json | Select-Object -First 1
-        } else {
-            $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$DefaultRepo/releases?per_page=1" |
-                Select-Object -First 1
-        }
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$DefaultRepo/releases?per_page=1" |
+            Select-Object -First 1
         $assetObj = $release.assets | Where-Object { $_.name -match '-terminal-windows\.zip$' } | Select-Object -First 1
     } catch { $assetObj = $null }
+    if ((-not $assetObj) -and (Get-Command gh -ErrorAction SilentlyContinue)) {
+        gh auth status *> $null
+        if ($LASTEXITCODE -eq 0) {
+            try {
+                $release = (gh api "repos/$DefaultRepo/releases?per_page=1") | ConvertFrom-Json | Select-Object -First 1
+                $assetObj = $release.assets | Where-Object { $_.name -match '-terminal-windows\.zip$' } | Select-Object -First 1
+            } catch { $assetObj = $null }
+        }
+    }
     if (-not $assetObj) {
         Write-Error "Could not determine the binary name from the latest release. If the repository is not publicly accessible, install/authenticate the GitHub CLI (gh auth login), or pass the name explicitly: -BinName <name>"
     }

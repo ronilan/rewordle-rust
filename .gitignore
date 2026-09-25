@@ -34,3 +34,6 @@ Icon
 /config.exe
 /package.exe
 /run.exe
+
+# Personal tool config
+.uaii-git-editor

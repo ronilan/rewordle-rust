@@ -25,9 +25,9 @@ docker run --rm -it rewordle
 
 Type `rewordle` in the container shell to launch.
 
-## TUI Install
+## TUI Install / Uninstall
 
-The scripts fetch the right binary for your platform from the latest release and install it into `/usr/local/bin` (macOS/Linux) or `C:\Program Files\rewordle-rust` (Windows). No clone or build required.
+Installs the latest release binary — `/usr/local/bin` (macOS/Linux) or `C:\Program Files\rewordle-rust` (Windows). No clone or build required:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/ronilan/rewordle-rust/main/install.sh | bash
@@ -36,6 +36,8 @@ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/ronilan/r
 ```powershell
 irm https://raw.githubusercontent.com/ronilan/rewordle-rust/main/install.ps1 | iex
 ```
+
+Uninstall the same way with `uninstall.sh` / `uninstall.ps1`. If the release lookup fails, pass the binary name explicitly: `bash uninstall.sh <binary-name>` / `uninstall.ps1 -BinName <name>`.
 
 ## WASM version
 
