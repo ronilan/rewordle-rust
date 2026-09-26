@@ -2,9 +2,7 @@
 
 Rewordle lets you play all the Wordle words from the beginning.
 
-It can be be played in the terminal, using native macOS and Windows app or [right here in the browser](https://ronilan.github.io/rewordle-rust/).
-
-It's written in [Rust](https://www.rust-lang.org/) using the [Incredible](https://www.incredible.rs/) TUI framework.
+It can be be played in the terminal, using native macOS and Windows app or [right here in the browser](https://ronilan.github.io/rewordle-rust/). It's written in [Rust](https://www.rust-lang.org/) using the [Incredible](https://www.incredible.rs/) TUI framework.
 
 <img src="./media/rusty.png" alt="splash" width="401"></p>
 
@@ -54,8 +52,6 @@ Stats (results, streaks, word progress) are kept in a `.rewordle` file under the
 - macOS: `~/Library/Application Support/rewordle/.rewordle`
 - Linux: `~/.local/share/rewordle/.rewordle` (or `$XDG_DATA_HOME/rewordle/.rewordle`)
 - Windows: `C:\Users\<you>\AppData\Roaming\rewordle\.rewordle`
-
-The web version stores the same stats in the browser's local storage under the `.rewordle` key.
 
 ## Development
 
