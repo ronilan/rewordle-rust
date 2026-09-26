@@ -34,7 +34,6 @@ pub struct AppState {
     pub word_status: WordStatus,
 }
 
-#[cfg(not(target_arch = "wasm32"))]
 fn load_progress() -> (Vec<u32>, (u32, u32), usize) {
     let from_storage = crate::storage::read();
 
@@ -59,11 +58,6 @@ fn load_progress() -> (Vec<u32>, (u32, u32), usize) {
     let word_index: usize = from_storage[2].parse::<usize>().unwrap_or(0);
 
     (results, streak, word_index)
-}
-
-#[cfg(target_arch = "wasm32")]
-fn load_progress() -> (Vec<u32>, (u32, u32), usize) {
-    (vec![0, 0, 0, 0, 0, 0, 0], (0, 0), 0)
 }
 
 pub fn initial_state() -> AppState {

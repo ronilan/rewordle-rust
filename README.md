@@ -55,6 +55,8 @@ Stats (results, streaks, word progress) are kept in a `.rewordle` file under the
 - Linux: `~/.local/share/rewordle/.rewordle` (or `$XDG_DATA_HOME/rewordle/.rewordle`)
 - Windows: `C:\Users\<you>\AppData\Roaming\rewordle\.rewordle`
 
+The web version stores the same stats in the browser's local storage under the `.rewordle` key.
+
 ## Development
 
 See [Development](./markdowns/DEVELOPMENT.md) and [Development Environment Prerequisites](./markdowns/DEVELOPMENT_PREREQUISITES.md)

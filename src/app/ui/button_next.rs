@@ -28,7 +28,6 @@ pub fn build() -> Element<AppState> {
     button.on_state(|el, state, _event| {
         if state.game != GameStatus::InPlay {
             el.look(underlined("Next"));
-            #[cfg(not(target_arch = "wasm32"))]
             crate::storage::save(&state.results, state.streak, state.word_index).ok();
         } else {
             el.look(Look::from("    "));

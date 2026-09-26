@@ -10,6 +10,9 @@ pub use core::model::{AppState, GameStatus, WordStatus};
 #[cfg(target_arch = "wasm32")]
 mod game;
 #[cfg(target_arch = "wasm32")]
+#[path = "storage_web.rs"]
+mod storage;
+#[cfg(target_arch = "wasm32")]
 mod words;
 
 #[cfg(target_arch = "wasm32")]

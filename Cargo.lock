@@ -790,6 +790,7 @@ dependencies = [
  "incredible_window_macos",
  "incredible_window_windows",
  "wasm-bindgen",
+ "web-sys",
  "windows-sys 0.59.0",
 ]
 
