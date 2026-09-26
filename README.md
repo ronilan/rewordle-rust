@@ -2,7 +2,7 @@
 
 Rewordle lets you play all the Wordle words from the beginning.
 
-    It can be be played in the terminal, using native macOS and Windows app or [right here in the browser](https://ronilan.github.io/rewordle-rust/).
+It can be be played in the terminal, using native macOS and Windows app or [right here in the browser](https://ronilan.github.io/rewordle-rust/).
 
 It's written in [Rust](https://www.rust-lang.org/) using the [Incredible](https://www.incredible.rs/) TUI framework.
 
