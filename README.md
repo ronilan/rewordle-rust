@@ -2,13 +2,17 @@
 
 Rewordle lets you play all the Wordle words from the beginning.
 
-It can be be played in the terminal, using native macOS and Windows app or [right here in the browser](https://ronilan.github.io/rewordle-rust/).
+    It can be be played in the terminal, using native macOS and Windows app or [right here in the browser](https://ronilan.github.io/rewordle-rust/).
 
 It's written in [Rust](https://www.rust-lang.org/) using the [Incredible](https://www.incredible.rs/) TUI framework.
 
-<p align=center><img src="./media/social.png" alt="banner" width="640" style="border: 1px solid #999; border-radius: 5px"/></p>
+<img src="./media/rusty.png" alt="splash" width="401"></p>
 
 # Install
+
+## Web
+
+No install needed: https://ronilan.github.io/rewordle-rust/
 
 ## Pre Built Binaries
 
@@ -37,13 +41,9 @@ curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/ronilan/r
 irm https://raw.githubusercontent.com/ronilan/rewordle-rust/main/install.ps1 | iex
 ```
 
-Uninstall the same way with `uninstall.sh` / `uninstall.ps1`. If the release lookup fails, pass the binary name explicitly: `bash uninstall.sh <binary-name>` / `uninstall.ps1 -BinName <name>`.
+Uninstall the same way with `uninstall.sh` / `uninstall.ps1`. 
 
-## WASM version
-
-Available on web at: https://ronilan.github.io/rewordle-rust/
-
-# Use
+# Play
 
 Play it like Wordle!
 
