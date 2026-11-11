@@ -67,19 +67,18 @@ pub(crate) fn mutate_state_letter(state: &mut AppState, keypress: &str) {
             let index = line_in_play.iter().position(|&c| c == ' ');
             let uppercase_keypress = keypress.to_uppercase();
 
-            if is_valid_key(&uppercase_keypress) && index.is_some() {
-                // Insert letter
-                let idx = index.unwrap();
-                line_in_play[idx] = uppercase_keypress.chars().next().unwrap();
+            if let Some(idx) = index {
+                if is_valid_key(&uppercase_keypress) {
+                    // Insert letter
+                    line_in_play[idx] = uppercase_keypress.chars().next().unwrap();
+                }
             } else if keypress == "enter" && index.is_none() {
                 // Enter pressed and line is full
                 let word: String = line_in_play.iter().collect();
                 if !VALID_WORDS.contains(&word.as_str()) && !PLAY_WORDS.contains(&word.as_str()) {
                     state.word_status = WordStatus::Invalid;
-                    return;
                 } else {
                     state.word_status = WordStatus::Valid;
-                    return;
                 }
             } else if keypress == "delete" && line_in_play[0] != ' ' {
                 // Delete last letter
@@ -104,7 +103,7 @@ pub(crate) fn mutate_state_new_word(state: &mut AppState) {
     let line_in_play = &mut state.status[state.in_play]; // now mutable borrow is fine
     let word: String = line_in_play.iter().collect();
 
-    if &word == state.answer {
+    if word == state.answer {
         // Win condition
         state.word_index += 1;
         state.results[state.in_play] += 1;

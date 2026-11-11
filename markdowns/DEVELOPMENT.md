@@ -17,8 +17,8 @@ Or with Cargo / scripts directly:
 
 ```bash
 cargo run --bin rewordle                                            # terminal
-APP_NAME=Rewordle cargo run --features macos-native --bin rewordle_macos  # macOS GUI
-APP_NAME=Rewordle cargo run --features windows-native --bin rewordle_windows  # Windows GUI
+cargo run --features macos-native --bin rewordle_macos  # macOS GUI
+cargo run --features windows-native --bin rewordle_windows  # Windows GUI
 scripts/build_web.sh --dev --serve                                  # web (dev + serve)
 scripts/build_web.sh                                                # web (release build into docs/)
 ```

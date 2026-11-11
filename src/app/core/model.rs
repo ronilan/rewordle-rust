@@ -45,7 +45,7 @@ fn load_progress() -> (Vec<u32>, (u32, u32), usize) {
     let streak: (u32, u32) = (
         from_storage[1]
             .split(':')
-            .nth(0)
+            .next()
             .and_then(|s| s.parse().ok())
             .unwrap_or(0),
         from_storage[1]

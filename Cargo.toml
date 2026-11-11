@@ -100,3 +100,10 @@ path = "src/windows.rs"
 opt-level = 3
 lto = "thin"
 codegen-units = 1
+
+[lints.clippy]
+collapsible-if = "allow"
+module_inception = "allow"
+# Listener callback table + traversal helpers are inherently complex generic
+# types. Aliasing them would leak into public API docs for no benefit.
+type_complexity = "allow"

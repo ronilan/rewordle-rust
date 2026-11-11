@@ -71,7 +71,5 @@ pub fn read() -> Vec<String> {
         "0".to_string(),
     ];
 
-    let data = load_rewordle(default_data);
-
-    data
+    load_rewordle(default_data)
 }

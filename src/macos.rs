@@ -16,9 +16,6 @@ mod words;
 
 #[cfg(feature = "macos-native")]
 fn main() {
-    incredible_window_macos::set_window_title(
-        option_env!("APP_NAME").unwrap_or("An Incredible App"),
-    );
     incredible_window_macos::run_app(core::application_flow::run_flow_macos);
 }
 

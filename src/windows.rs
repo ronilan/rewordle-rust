@@ -21,9 +21,6 @@ mod words;
 
 #[cfg(feature = "windows-native")]
 fn main() {
-    incredible_window_windows::set_window_title(
-        option_env!("APP_NAME").unwrap_or("An Incredible App"),
-    );
     incredible_window_windows::run_app(core::application_flow::run_flow_windows);
 }
 

@@ -16,17 +16,6 @@ No install needed: https://ronilan.github.io/rewordle-rust/
 
 Pre built binaries are provided for each [release](https://github.com/ronilan/rewordle-rust/releases).
 
-## Linux via Docker
-
-To try the Linux terminal version, build and run:
-
-```
-docker build -t rewordle .
-docker run --rm -it rewordle
-```
-
-Type `rewordle` in the container shell to launch.
-
 ## TUI Install / Uninstall
 
 Installs the latest release binary — `/usr/local/bin` (macOS/Linux) or `C:\Program Files\rewordle-rust` (Windows).
@@ -40,6 +29,21 @@ irm https://raw.githubusercontent.com/ronilan/rewordle-rust/main/install.ps1 | i
 ```
 
 Uninstall the same way with `uninstall.sh` / `uninstall.ps1`. 
+
+## Linux via Docker
+
+To try the Linux terminal version, fetch the repository's `Dockerfile` and build the image (it downloads the latest Linux release, so no source checkout is needed):
+
+```bash
+mkdir docker-build && cd docker-build
+curl -fsSL https://raw.githubusercontent.com/ronilan/rewordle-rust/main/Dockerfile -o Dockerfile
+docker build -t rewordle .
+docker run --rm -it rewordle
+```
+
+Run the commands in an **empty folder** (not your home directory) so Docker's build context doesn't include large/system folders like `~/.Trash`.
+
+Type `rewordle` in the container shell to launch.
 
 # Play
 
